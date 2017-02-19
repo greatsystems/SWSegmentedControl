@@ -15,6 +15,9 @@ open class SWSegmentedControl: UIControl {
     private var buttons: [UIButton]?
     private var items: [String] = ["First", "Second"]
     
+    let screenWidth = UIScreen.main.bounds.width
+    let screenHeight = UIScreen.main.bounds.height
+    var grayIndicator:UIView!
     
     // Wait for a day UIFont will be inspectable
     @IBInspectable open var font: UIFont = UIFont.systemFont(ofSize: UIFont.systemFontSize) {
@@ -44,7 +47,7 @@ open class SWSegmentedControl: UIControl {
     @IBInspectable open var selectedSegmentIndex: Int = 0 {
         didSet {
             self.configureIndicator()
-
+            
             if let buttons = self.buttons {
                 for button in buttons {
                     button.isSelected = false
@@ -55,6 +58,15 @@ open class SWSegmentedControl: UIControl {
             }
         }
     }
+    
+    @IBInspectable open var scHeight: CGFloat = 50 {
+        didSet {
+            grayIndicator.frame = CGRect(x: 0, y: scHeight-self.indicatorThickness, width: screenWidth, height: self.indicatorThickness)
+        }
+        
+    }
+    
+    
     
     private var indicatorXConstraint: NSLayoutConstraint!
     
@@ -109,7 +121,7 @@ open class SWSegmentedControl: UIControl {
     }
     
     open override func prepareForInterfaceBuilder() {
-
+        
     }
     
     open override func layoutSubviews() {
@@ -122,9 +134,12 @@ open class SWSegmentedControl: UIControl {
     private func initIndicator() {
         guard self.numberOfSegments > 0 else { return }
         
+        grayIndicator = UIView.init(frame: CGRect(x: 0, y: scHeight-self.indicatorThickness, width: screenWidth, height: self.indicatorThickness))
+        grayIndicator.backgroundColor = UIColor(red: 216/255, green: 216/255, blue: 216/255, alpha: 0.7)
+        self.addSubview(grayIndicator)
+        
         let selectionIndicatorView = UIView()
         self.selectionIndicatorView = selectionIndicatorView
-        
         selectionIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         selectionIndicatorView.backgroundColor = self.tintColor
         self.addSubview(selectionIndicatorView)
@@ -214,6 +229,9 @@ open class SWSegmentedControl: UIControl {
     
     // MARK: - Appearance
     private func configureView() {
+        
+        
+        
         self.configureIndicator()
         self.configureButtons()
     }
@@ -242,7 +260,7 @@ open class SWSegmentedControl: UIControl {
         button.titleLabel?.font = self.font
         button.setTitleColor(self.colorToUse(self.titleColor), for: .selected)
         button.setTitleColor(self.unselectedTitleColor, for: UIControlState())
-
+        
     }
     
     // MARK: - Actions
